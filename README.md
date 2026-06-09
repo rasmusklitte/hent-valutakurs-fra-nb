@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```
-hent.bat <YYYY-MM-DD> <CURRENCY>
+hent.bat <YYYY-MM-DD|YYYYMMDD> <CURRENCY>
 ```
 
 Examples:

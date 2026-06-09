@@ -6,7 +6,9 @@ import pyodbc
 
 from config import connection_string
 
-USAGE = "Usage: python fetch_fx.py <YYYY-MM-DD> <CURRENCY>\n  example: python fetch_fx.py 2010-01-04 EUR"
+USAGE = "Usage: python fetch_fx.py <YYYY-MM-DD|YYYYMMDD> <CURRENCY>\n  example: python fetch_fx.py 2010-01-04 EUR"
+
+DATE_FORMATS = ("%Y-%m-%d", "%Y%m%d")
 
 QUERY = """
 SELECT TOP 1 rate_date, currency, dkk_per_1, dkk_per_100
@@ -32,10 +34,18 @@ def parse_args(argv):
         print(USAGE, file=sys.stderr)
         sys.exit(2)
     raw_date, raw_currency = argv
-    try:
-        rate_date = datetime.strptime(raw_date, "%Y-%m-%d").date()
-    except ValueError:
-        print(f"Invalid date '{raw_date}'. Expected format YYYY-MM-DD.", file=sys.stderr)
+    rate_date = None
+    for fmt in DATE_FORMATS:
+        try:
+            rate_date = datetime.strptime(raw_date, fmt).date()
+            break
+        except ValueError:
+            continue
+    if rate_date is None:
+        print(
+            f"Invalid date '{raw_date}'. Expected format YYYY-MM-DD or YYYYMMDD.",
+            file=sys.stderr,
+        )
         sys.exit(2)
     return rate_date, raw_currency.strip().upper()
 
